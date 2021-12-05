@@ -1,0 +1,3 @@
+name: ToBeDone
+runtime: dotnet
+description: A azure infrastructure setup for the to be done todo application
