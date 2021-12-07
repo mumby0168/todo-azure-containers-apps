@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'src/ToBeDone.Servies.Work/**'
+    - 'src/ToBeDone.Services.Work/**'
 
   workflow_dispatch:
       inputs:
@@ -53,13 +53,13 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker build . -f src/ToBeDone.Servies.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
+          docker build . -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
           
           docker images
           
           docker tag $IMAGE_ID:${{ github.sha }} $IMAGE_ID:latest
           
-          docker push $IMAGE_ID/verdon-web:${{ github.sha }}
+          docker push $IMAGE_ID:${{ github.sha }}
           docker push $IMAGE_ID:latest 
 
       
