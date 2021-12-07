@@ -1,14 +1,14 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WorkspacesDIR /app
+WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WorkspacesDIR /src
+WORKDIR /src
 COPY ["src/ToBeDone.Services.Workspaces/ToBeDone.Services.Workspaces.csproj", "src/ToBeDone.Services.Workspaces/"]
 RUN dotnet restore "src/ToBeDone.Services.Workspaces/ToBeDone.Services.Workspaces.csproj"
 COPY . .
-WorkspacesDIR "/src/src/ToBeDone.Services.Workspaces"
+WORKDIR "/src/src/ToBeDone.Services.Workspaces"
 RUN dotnet build "ToBeDone.Services.Workspaces.csproj" -c Release -o /app/build
 
 FROM build AS publish
