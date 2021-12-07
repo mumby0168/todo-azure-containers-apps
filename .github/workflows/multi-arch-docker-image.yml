@@ -14,7 +14,7 @@ on:
           default: 'Manual run'
     
 env:
-  IMAGE: to-be-done/work-service
+  IMAGE_ID: ghcr.io/mumby0168/to-be-done/work-service
 
 jobs:
 
@@ -55,11 +55,6 @@ jobs:
           
       - name: Docker Login
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Setup Image ID
-        run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
       - name: Build and push
         uses: docker/build-push-action@v2
