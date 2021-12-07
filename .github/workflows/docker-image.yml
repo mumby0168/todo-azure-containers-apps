@@ -1,0 +1,67 @@
+name: ToBeDone.Services.Work
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'src/ToBeDone.Servies.Work/**'
+
+  workflow_dispatch:
+      inputs:
+        reason:
+          description: 'The reason for running the workflow'
+          required: true
+          default: 'Manual run'
+    
+env:
+  IMAGE: to-be-done/work-service
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+          packages: write
+          contents: read
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: |
+          dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: |
+          dotnet test --no-restore --verbosity normal
+          
+      - name: Docker Login
+        run: docker login ghrc.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Docker
+      - run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          docker build . -f src/ToBeDone.Servies.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
+          
+          docker images
+          
+          docker tag $IMAGE_ID:${{ github.sha }} $IMAGE_ID:latest
+          
+          docker push $IMAGE_ID/verdon-web:${{ github.sha }}
+          docker push $IMAGE_ID:latest 
+
+      
+
+    
