@@ -48,7 +48,7 @@ jobs:
         run: docker login ghrc.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           
       - name: Docker
-      - run: |
+        run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
