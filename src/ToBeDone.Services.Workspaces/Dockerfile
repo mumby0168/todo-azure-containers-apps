@@ -1,20 +1,15 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
+WorkspacesDIR /app
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["src/ToBeDone.Services.Workspaces/ToBeDone.Services.Workspaces.csproj", "ToBeDone.Services.Workspaces/"]
+WorkspacesDIR /src
+COPY ["src/ToBeDone.Services.Workspaces/ToBeDone.Services.Workspaces.csproj", "src/ToBeDone.Services.Workspaces/"]
 RUN dotnet restore "src/ToBeDone.Services.Workspaces/ToBeDone.Services.Workspaces.csproj"
 COPY . .
-WORKDIR "/src/ToBeDone.Services.Workspaces"
+WorkspacesDIR "/src/src/ToBeDone.Services.Workspaces"
 RUN dotnet build "ToBeDone.Services.Workspaces.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "ToBeDone.Services.Workspaces.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ToBeDone.Services.Workspaces.dll"]
