@@ -1,11 +1,6 @@
 name: Multi Arch - ToBeDone.Services.Work
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-    - 'src/ToBeDone.Services.Work/**'
-
   workflow_dispatch:
       inputs:
         reason:
