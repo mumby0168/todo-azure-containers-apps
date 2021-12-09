@@ -37,7 +37,7 @@ jobs:
     steps:
 
       - name: Print Version Number
-        run: echo "Version Number $IMAGE_VERSION"
+        run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
 
       - uses: actions/checkout@v2
       - name: Setup .NET Core
@@ -75,6 +75,16 @@ jobs:
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
           docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ needs.version.outputs.img_ver }} --output type=image,push=true
+
+  release:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs:
+      - version
+      - build
+    steps:
+      - name: Print Version Number
+        run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
         
 
       
