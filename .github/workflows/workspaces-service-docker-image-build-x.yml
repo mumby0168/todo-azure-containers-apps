@@ -1,10 +1,10 @@
-name: ToBeDone.Services.Work
+name: ToBeDone.Services.Workspacesspaces
 
 on:
   push:
     branches: [ main ]
     paths:
-    - 'src/ToBeDone.Services.Work/**'
+    - 'src/ToBeDone.Services.Workspaces/**'
 
   workflow_dispatch:
       inputs:
@@ -14,7 +14,7 @@ on:
           default: 'Manual run'
     
 env:
-  IMAGE: to-be-done/work-service
+  IMAGE: to-be-done/workspaces-service
 
 jobs:
 
@@ -43,6 +43,15 @@ jobs:
       - name: Test
         run: |
           dotnet test --no-restore --verbosity normal
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64,arm
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
           
       - name: Docker Login
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -53,14 +62,8 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker build . -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
-          
-          docker images
-          
-          docker tag $IMAGE_ID:${{ github.sha }} $IMAGE_ID:latest
-          
-          docker push $IMAGE_ID:${{ github.sha }}
-          docker push $IMAGE_ID:latest
+          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Workspaces/Dockerfile -t $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest --output type=image,push=true
+        
 
       
 
