@@ -7,7 +7,7 @@ on:
     
 env:
   IMAGE: to-be-done/work-service
-  VERSION: n/a
+  IMAGE_VERSION: n/a
 
 jobs:
 
@@ -26,12 +26,13 @@ jobs:
 
       - name: Set Version Number
         run: |
-          VERSION=${{ steps.regex-match.outputs.match }}'
+          IMAGE_VERSION=${{ steps.regex-match.outputs.match }}
 
       - name: Print Version Number
         run: echo $VERSION
 
   build:
+    needs: version
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
@@ -79,7 +80,7 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:$VERSION --output type=image,push=true
+          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:$IMAGE_VERSION --output type=image,push=true
         
 
       
