@@ -14,49 +14,14 @@ class MyStack : Stack
 {
     public MyStack()
     {
-        var rg = new ResourceGroup(ResourceNameHelper.AppendEnvWithDash("rg-tobedone"));
-
-        var cosmosAccount = new DatabaseAccount(ResourceNameHelper.AppendEnvWithDash("cosmos-tobedone"),
-            new DatabaseAccountArgs()
-            {
-                ResourceGroupName = rg.Name,
-                DatabaseAccountOfferType = DatabaseAccountOfferType.Standard,
-                Locations =
-                {
-                    new LocationArgs
-                    {
-                        LocationName = rg.Location,
-                        FailoverPriority = 0,
-                    },
-                },
-                ConsistencyPolicy = new ConsistencyPolicyArgs
-                {
-                    DefaultConsistencyLevel = DefaultConsistencyLevel.ConsistentPrefix
-                }
-            });
-
-        var workServiceDb = new SqlResourceSqlDatabase("work-service-db", new SqlResourceSqlDatabaseArgs
+        var rg = new ResourceGroup(ResourceNameHelper.AppendEnvWithDash("rg-tobedone"), new ResourceGroupArgs
         {
-            ResourceGroupName = rg.Name,
-            AccountName = cosmosAccount.Name,
-            Resource = new SqlDatabaseResourceArgs()
-            {
-                Id = "work-service-db"
-            }
+            ResourceGroupName = ResourceNameHelper.AppendEnvWithDash("rg-tobedone")
         });
 
-        var workspaceServiceDb = new SqlResourceSqlDatabase("workspace-service-db", new SqlResourceSqlDatabaseArgs
+        var workspace = new Workspace(ResourceNameHelper.AppendEnvWithDash("law-tobedone"), new WorkspaceArgs
         {
-            ResourceGroupName = rg.Name,
-            AccountName = cosmosAccount.Name,
-            Resource = new SqlDatabaseResourceArgs()
-            {
-                Id = "workspace-service-db"
-            }
-        });
-
-        var workspace = new Workspace(ResourceNameHelper.AppendEnvWithDash("lwsp-tobedone"), new WorkspaceArgs
-        {
+            WorkspaceName = ResourceNameHelper.AppendEnvWithDash("law-tobedone"),
             ResourceGroupName = rg.Name,
             Sku = new WorkspaceSkuArgs {Name = "PerGB2018"},
             RetentionInDays = 30,
@@ -68,9 +33,11 @@ class MyStack : Stack
                 ResourceGroupName = items.Item1,
                 WorkspaceName = items.Item2,
             }));
-        ;
+        
+        
         var acaEnv = new KubeEnvironment(ResourceNameHelper.AppendEnvWithDash("ace-tobedone"), new KubeEnvironmentArgs
         {
+            Name = ResourceNameHelper.AppendEnvWithDash("ace-tobedone"),
             ResourceGroupName = rg.Name,
             Type = "Managed",
             AppLogsConfiguration = new AppLogsConfigurationArgs
@@ -83,42 +50,19 @@ class MyStack : Stack
                 }
             }
         });
-
-        var acr = new Registry(ResourceNameHelper.AppendEnv("acrtobedone"), new RegistryArgs()
-        {
-            ResourceGroupName = rg.Name,
-            Sku = new SkuArgs {Name = "Basic"},
-            AdminUserEnabled = true
-        });
-
-        var credentials = Output.Tuple(rg.Name, acr.Name).Apply(items =>
-            ListRegistryCredentials.InvokeAsync(new ListRegistryCredentialsArgs
-            {
-                ResourceGroupName = items.Item1,
-                RegistryName = items.Item2
-            }));
-
-        var acrUsername = credentials.Apply(c => c.Username);
-        var acrPassword = credentials.Apply(c => c.Passwords[0].Value);
-
         
-        //TODO: Need to define the container image here
-        // var workspaceServiceApp = CreateApp("workspace-service", rg, acaEnv, acr, acrUsername, acrPassword);
-        // var workServiceApp = CreateApp("work-service", rg, acaEnv, acr, acrUsername, acrPassword);
-        //
-        // WorkspaceAppUrl = Output.Format($"https://{workspaceServiceApp.Configuration.Apply(c => c.Ingress).Apply(i => i.Fqdn)}");
-        // WorkAppUrl = Output.Format($"https://{workServiceApp.Configuration.Apply(c => c.Ingress).Apply(i => i.Fqdn)}");
-
-        WorkDbName = workServiceDb.Name;
-        WorkspaceDbName = workspaceServiceDb.Name;
+        var workspaceServiceApp = CreateApp("work-service", rg, acaEnv, "ghcr.io/mumby0168/to-be-done/work-service:latest");
+        var workServiceApp = CreateApp("workspaces-service", rg, acaEnv, "ghcr.io/mumby0168/to-be-done/workspaces-service:latest");
+        
+        WorkspaceAppUrl = Output.Format($"https://{workspaceServiceApp.Configuration.Apply(c => c.Ingress).Apply(i => i.Fqdn)}");
+        WorkAppUrl = Output.Format($"https://{workServiceApp.Configuration.Apply(c => c.Ingress).Apply(i => i.Fqdn)}");
     }
 
-    private static ContainerApp CreateApp(string appName, ResourceGroup rg, KubeEnvironment acaEnv, Registry acr,
-        Output<string?> acrUsername,
-        Output<string?> acrPassword)
+    private static ContainerApp CreateApp(string appName, ResourceGroup rg, KubeEnvironment acaEnv, string imageName)
     {
         var workspaceServiceApp = new ContainerApp(appName, new ContainerAppArgs
         {
+            Name = appName,
             ResourceGroupName = rg.Name,
             KubeEnvironmentId = acaEnv.Id,
             Configuration = new ConfigurationArgs
@@ -128,23 +72,6 @@ class MyStack : Stack
                     External = true,
                     TargetPort = 80
                 },
-                Registries =
-                {
-                    new RegistryCredentialsArgs
-                    {
-                        Server = acr.LoginServer,
-                        Username = acrUsername!,
-                        PasswordSecretRef = "pwd"
-                    }
-                },
-                Secrets =
-                {
-                    new SecretArgs
-                    {
-                        Name = "pwd",
-                        Value = acrPassword!
-                    }
-                },
             },
             Template = new TemplateArgs
             {
@@ -152,19 +79,26 @@ class MyStack : Stack
                 {
                     new ContainerArgs
                     {
-                        Name = appName,
-                    }
-                }
+                        Name = ResourceNameHelper.AppendEnvWithDash(appName),
+                        Image = imageName,
+                        Resources = new ContainerResourcesArgs()
+                        {
+                            Cpu = 0.5,
+                            Memory = "1.0Gi"
+                        }
+                    },
+                },
+                Scale = new ScaleArgs()
+                {
+                    MinReplicas = 0,
+                    MaxReplicas = 1
+                },
             }
         });
         return workspaceServiceApp;
     }
 
-    public Output<string> WorkDbName { get; set; }
-
     public Output<string> WorkAppUrl { get; set; }
-
-    public Output<string> WorkspaceDbName { get; set; }
-
+    
     public Output<string> WorkspaceAppUrl { get; set; }
 }
