@@ -12,6 +12,8 @@ jobs:
 
   version:
     runs-on: ubuntu-latest
+    outputs:
+      img_ver: ${{ steps.version_num.outputs.match }}
     steps:
       - name: Print Tag Ref
         run: echo $GITHUB_REF
@@ -22,10 +24,7 @@ jobs:
         with:
           text: ${{ github.ref }}
           regex: '[0-9.]+'
-      
-      - name: Set Env Var
-        run: |
-          echo "::set-output name=image_version::${{ steps.version_num.outputs.match }}"
+    
 
 
   print:
@@ -33,7 +32,7 @@ jobs:
     needs: version
     steps:
         - name: Print Version Number
-          run: echo "${{ needs.version.outputs.image_version }}"
+          run: echo "${{ needs.version.outputs.img_ver }}"
 
   # build:
   #   needs: version
