@@ -22,13 +22,18 @@ jobs:
         with:
           text: ${{ github.ref }}
           regex: '[0-9.]+'
+      
+      - name: Set Env Var
+        run: |
+          echo "::set-output name=image_version::${{ steps.version_num.outputs.match }}"
+
 
   print:
     runs-on: ubuntu-latest
     needs: version
     steps:
         - name: Print Version Number
-          run: echo "Version Number ${{ steps.version_num.outputs.match }}""
+          run: echo "${{ needs.version.outputs.image_version }}"
 
   # build:
   #   needs: version
