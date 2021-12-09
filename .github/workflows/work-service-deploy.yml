@@ -18,21 +18,17 @@ jobs:
       
       - name: Extract Version Number
         uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
+        id: version_num
         with:
           text: ${{ github.ref }}
           regex: '[0-9.]+'
-
-      - name: Set Version Number
-        run: |
-          echo "IMAGE_VERSION=${{ steps.regex-match.outputs.match }}" >> $GITHUB_ENV
 
   print:
     runs-on: ubuntu-latest
     needs: version
     steps:
         - name: Print Version Number
-          run: echo "Version Number ${{ env.IMAGE_VERSION }}"
+          run: echo "Version Number ${{ ${{ steps.version_num.outputs.match }} }}"
 
   # build:
   #   needs: version
