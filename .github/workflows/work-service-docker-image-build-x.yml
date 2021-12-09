@@ -53,7 +53,7 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker buildx . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
+          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ github.sha }}
           
           docker images
           
