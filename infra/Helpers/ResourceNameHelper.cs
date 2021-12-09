@@ -1,5 +1,4 @@
 using Pulumi;
-using Pulumi.AzureNative.DeviceUpdate;
 
 namespace ToBeDone.Helpers;
 

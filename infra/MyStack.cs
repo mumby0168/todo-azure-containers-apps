@@ -1,14 +1,10 @@
 using Pulumi;
-using Pulumi.AzureNative.ContainerRegistry;
-using Pulumi.AzureNative.DocumentDB;
-using Pulumi.AzureNative.DocumentDB.Inputs;
 using Pulumi.AzureNative.Resources;
 using Pulumi.AzureNative.Web.V20210301;
 using Pulumi.AzureNative.Web.V20210301.Inputs;
 using ToBeDone.Helpers;
 using Pulumi.AzureNative.OperationalInsights;
 using Pulumi.AzureNative.OperationalInsights.Inputs;
-using SkuArgs = Pulumi.AzureNative.ContainerRegistry.Inputs.SkuArgs;
 
 class MyStack : Stack
 {
