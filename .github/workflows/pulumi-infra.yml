@@ -10,9 +10,6 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - uses: actions/checkout@v2
       - name: Setup .NET Core
@@ -33,9 +30,6 @@ jobs:
     environment: dev-infra
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - uses: actions/checkout@v2
       - name: Setup .NET Core
