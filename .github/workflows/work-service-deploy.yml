@@ -18,12 +18,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: install az containerapps
-        run: |
-            az extension add \
-            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+      # - name: install az containerapps
+      #   run: |
+      #       az extension add \
+      #       --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
 
-            az provider register --namespace Microsoft.Web
+      #       az provider register --namespace Microsoft.Web
+
+      - name: Show RG
+        run: |
+            az group list
       
       - name: test az cli
         run: |
