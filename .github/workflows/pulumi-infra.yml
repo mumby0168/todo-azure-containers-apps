@@ -1,0 +1,51 @@
+name: Pulumi Infra Deployment
+
+on:
+  push:
+    tags:
+      - workspaces-service-v*
+      - work-service-v*
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      
+      - uses: pulumi/actions@v3
+        with:
+          command: preview
+          stack-name: dev
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  apply:
+    environment: dev-infra
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      
+      - uses: pulumi/actions@v3
+        with:
+          command: up
+          stack-name: dev
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      
+      
