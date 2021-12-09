@@ -30,7 +30,7 @@ jobs:
       
       - name: test az cli
         run: |
-            az containerapps list
+            az containerapp list
 
   version:
     runs-on: ubuntu-latest
