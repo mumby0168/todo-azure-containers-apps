@@ -7,7 +7,6 @@ on:
     
 env:
   IMAGE: to-be-done/work-service
-  IMAGE_VERSION: n/a
 
 jobs:
 
