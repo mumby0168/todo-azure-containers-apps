@@ -26,10 +26,14 @@ jobs:
 
       - name: Set Version Number
         run: |
-          IMAGE_VERSION=${{ steps.regex-match.outputs.match }}
+          echo "IMAGE_VERSION=${{ steps.regex-match.outputs.match }}" >> $GITHUB_ENV
 
-      - name: Print Version Number
-        run: echo "Version Number ${{ env.IMAGE_VERSION }}"
+  print:
+    runs-on: ubuntu-latest
+    needs: version
+    steps:
+        - name: Print Version Number
+          run: echo "Version Number ${{ env.IMAGE_VERSION }}"
 
   # build:
   #   needs: version
