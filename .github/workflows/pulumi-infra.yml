@@ -20,6 +20,7 @@ jobs:
       - uses: pulumi/actions@v3
         with:
           command: preview
+          args: --diff
           stack-name: dev
           work-dir: ./infra
         env:
@@ -39,7 +40,7 @@ jobs:
       
       - uses: pulumi/actions@v3
         with:
-          command: up
+          command: up 
           stack-name: dev
           work-dir: ./infra
         env:
