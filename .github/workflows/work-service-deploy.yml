@@ -28,7 +28,7 @@ jobs:
     needs: version
     steps:
         - name: Print Version Number
-          run: echo "Version Number ${{ ${{ steps.version_num.outputs.match }} }}"
+          run: echo "Version Number ${{ steps.version_num.outputs.match }}""
 
   # build:
   #   needs: version
