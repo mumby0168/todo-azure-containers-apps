@@ -1,4 +1,4 @@
-name: ToBeDone.Services.Workspacesspaces
+name: ToBeDone.Services.Workspaces
 
 on:
   push:
