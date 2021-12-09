@@ -1,25 +1,33 @@
-name: ToBeDone.Services.Workspaces
+name: Workspaces Service Deploy
 
 on:
   push:
-    branches: [ main ]
-    paths:
-    - 'src/ToBeDone.Services.Workspaces/**'
-
-  workflow_dispatch:
-      inputs:
-        reason:
-          description: 'The reason for running the workflow'
-          required: true
-          default: 'Manual run'
+    tags:
+     - workspaces-service-v*
     
 env:
   IMAGE: to-be-done/workspaces-service
 
 jobs:
 
-  build:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      img_ver: ${{ steps.version_num.outputs.match }}
+    steps:
+      - name: Print Tag Ref
+        run: echo $GITHUB_REF
+      
+      - name: Extract Version Number
+        uses: actions-ecosystem/action-regex-match@v2
+        id: version_num
+        with:
+          text: ${{ github.ref }}
+          regex: '[0-9.]+'
 
+  build:
+    needs: version
+    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     permissions:
@@ -27,6 +35,10 @@ jobs:
           contents: read
 
     steps:
+
+      - name: Print Version Number
+        run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
+
       - uses: actions/checkout@v2
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -62,7 +74,36 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Workspaces/Dockerfile -t $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest --output type=image,push=true
+          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Workspaces/Dockerfile -t $IMAGE_ID:${{ needs.version.outputs.img_ver }} --output type=image,push=true
+
+  release:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      rg: rg-tobedone-dev
+    needs:
+      - version
+      - build
+    steps:
+      - name: Print Version Number
+        run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Install az containerapp Extension
+        run: |
+            az extension add \
+            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl \
+            --yes
+
+      - name: Deploy New Revision
+        run: |
+            az containerapp update \
+            --resource-group ${{ env.rg }} \
+            --name workspaces-service \
+            --image ghcr.io/mumby0168/to-be-done/workspaces-service:${{ needs.version.outputs.img_ver }}
         
 
       
