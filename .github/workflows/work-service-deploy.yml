@@ -10,6 +10,25 @@ env:
 
 jobs:
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: install az containerapps
+        run: |
+            az extension add \
+            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+
+            az provider register --namespace Microsoft.Web
+      
+      - name: test az cli
+        run: |
+            az containerapps list
+
   version:
     runs-on: ubuntu-latest
     outputs:
@@ -85,6 +104,21 @@ jobs:
     steps:
       - name: Print Version Number
         run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: install az containerapps
+        run: |
+            az extension add \
+            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+
+            az provider register --namespace Microsoft.Web
+      
+      - name: test az cli
+        run: |
+            az containerapps list
         
 
       
