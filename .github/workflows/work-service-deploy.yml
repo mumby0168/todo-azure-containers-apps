@@ -10,28 +10,6 @@ env:
 
 jobs:
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: install az containerapps
-        run: |
-            az extension add \
-            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl \
-            --yes
-
-      - name: Show RG
-        run: |
-            az group list
-      
-      - name: test az cli
-        run: |
-            az containerapp list
-
   version:
     runs-on: ubuntu-latest
     outputs:
@@ -101,6 +79,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     environment: dev
+    env:
+      rg: rg-tobedone-dev
     needs:
       - version
       - build
@@ -112,16 +92,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: install az containerapps
+      - name: Install az containerapp Extension
         run: |
             az extension add \
-            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl \
+            --yes
 
-            az provider register --namespace Microsoft.Web
-      
-      - name: test az cli
-        run: |
-            az containerapps list
+      - name: Deploy New Revision
+          run |
+            az containerapp update \
+            --resource-group ${{ env.rg }} \
+            --name work-service \
+            --image ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
         
 
       
