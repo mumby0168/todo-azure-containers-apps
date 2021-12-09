@@ -1,0 +1,52 @@
+# Prerequisites
+
+az extension add \
+  --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+
+az provider register --namespace Microsoft.Web
+
+# Setup
+
+RESOURCE_GROUP="rg-tobedone-dev"
+CONTAINERAPPS_ENVIRONMENT="ace-tobedone-dev"
+
+# work-service
+
+az containerapp create \
+  --name work-service \
+  --resource-group $RESOURCE_GROUP \
+  --environment $CONTAINERAPPS_ENVIRONMENT \
+  --image ghcr.io/mumby0168/to-be-done/work-service:latest \
+  --target-port 80 \
+  --ingress 'external' \
+  --query configuration.ingress.fqdn
+
+
+# workspaces-service
+
+az containerapp create \
+  --name work-service \
+  --resource-group $RESOURCE_GROUP \
+  --environment $CONTAINERAPPS_ENVIRONMENT \
+  --image ghcr.io/mumby0168/to-be-done/workspaces-service:latest \
+  --target-port 80 \
+  --ingress 'external' \
+  --query configuration.ingress.fqdn
+
+
+# update/deploy new image
+
+az containerapp update \
+  --name work-service \
+  --resource-group $RESOURCE_GROUP \
+  --image mcr.microsoft.com/azuredocs/containerapps-helloworld
+
+az containerapp update \
+  --name work-service \
+  --resource-group $RESOURCE_GROUP \
+  --image ghcr.io/mumby0168/to-be-done/work-service:latest
+
+  az containerapp update \
+  --name workspaces-service \
+  --resource-group $RESOURCE_GROUP \
+  --image ghcr.io/mumby0168/to-be-done/workspaces-service:d7a6413f0ed6a79fd66527a8d9cb39118a9c7e53
