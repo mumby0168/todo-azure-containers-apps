@@ -3,12 +3,13 @@
 az extension add \
   --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
 
-az provider register --namespace Microsoft.Web
+
+az provider register --namespace Microsoft.Web # this only needs running once per subscription
 
 # Setup
 
 RESOURCE_GROUP="rg-tobedone-dev"
-CONTAINERAPPS_ENVIRONMENT="ace-tobedone-dev"
+CONTAINERAPPS_ENVIRONMENT="ace-tobedone-dev" # already created via pulumi infra
 
 # work-service
 
@@ -37,16 +38,33 @@ az containerapp create \
 # update/deploy new image
 
 az containerapp update \
-  --name work-service \
-  --resource-group $RESOURCE_GROUP \
-  --image mcr.microsoft.com/azuredocs/containerapps-helloworld
+--name work-service \
+--resource-group $RESOURCE_GROUP \
+--image mcr.microsoft.com/azuredocs/containerapps-helloworld
 
 az containerapp update \
-  --name work-service \
-  --resource-group $RESOURCE_GROUP \
-  --image ghcr.io/mumby0168/to-be-done/work-service:latest
+--name work-service \
+--resource-group $RESOURCE_GROUP \
+--image ghcr.io/mumby0168/to-be-done/work-service:latest
 
-  az containerapp update \
-  --name workspaces-service \
-  --resource-group $RESOURCE_GROUP \
-  --image ghcr.io/mumby0168/to-be-done/workspaces-service:d7a6413f0ed6a79fd66527a8d9cb39118a9c7e53
+az containerapp update \
+--name workspaces-service \
+--resource-group $RESOURCE_GROUP \
+--image ghcr.io/mumby0168/to-be-done/workspaces-service:d7a6413f0ed6a79fd66527a8d9cb39118a9c7e53
+
+# Create Service Prinicpal for GA
+
+az ad sp create-for-rbac --name "sp-ga-deploy-tobedone" --role contributor \
+--scopes /subscriptions/<sub-id>/resourceGroups/$RESOURCE_GROUP \
+--sdk-auth
+
+az group list
+
+# To use pulumi with a service principal set these
+pulumi config set azure-native:clientId <client-id>
+
+pulumi config set azure-native:clientSecret <secret> --secret 
+
+pulumi config set azure-native:tenantId <tenant-id>
+
+pulumi config set azure-native:subscriptionId <sub-id>
