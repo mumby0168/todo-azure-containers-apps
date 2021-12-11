@@ -23,16 +23,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-
-      - name: Setup Pulumi CLI
-        uses: pulumi/setup-pulumi@v2.0.0
-
-      - name: Preview
-        working-directory: ./infra/ToBeDone.Infra.Core
-        run: |
-              pulumi preview --diff --stack dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       
       - uses: pulumi/actions@v3
         with:
