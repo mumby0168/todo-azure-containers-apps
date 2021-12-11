@@ -30,7 +30,7 @@ jobs:
       - name: Preview
         working-directory: ./infra/ToBeDone.Infra.Core
         run: |
-            pulumi preview --diff
+              pulumi preview --diff --stack dev
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       
