@@ -76,34 +76,52 @@ jobs:
 
           docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.Services.Work/Dockerfile -t $IMAGE_ID:${{ needs.version.outputs.img_ver }} --output type=image,push=true
 
-  release:
+  preview:
+    needs:
+        - version
+        - buildcl
+        - preview
     runs-on: ubuntu-latest
-    environment: dev
-    env:
-      rg: rg-tobedone-dev
+    steps:
+
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      
+      - uses: pulumi/actions@v3
+        with:
+          command: preview
+          args: --diff -c image=ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
+          stack-name: dev
+          work-dir: ./infra/ToBeDone.Infra.WorkService
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  deploy:
     needs:
       - version
       - build
+      - preview
+    environment: dev
+    runs-on: ubuntu-latest
     steps:
-      - name: Print Version Number
-        run: echo "Version Number ${{ needs.version.outputs.img_ver }}"
 
-      - uses: azure/login@v1
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Install az containerapp Extension
-        run: |
-            az extension add \
-            --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl \
-            --yes
-
-      - name: Deploy New Revision
-        run: |
-            az containerapp update \
-            --resource-group ${{ env.rg }} \
-            --name work-service \
-            --image ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
+          dotnet-version: '6.0.x'
+      
+      - uses: pulumi/actions@v3
+        with:
+          command: up
+          args: -c image=ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
+          stack-name: dev
+          work-dir: ./infra/ToBeDone.Infra.WorkService
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         
 
       

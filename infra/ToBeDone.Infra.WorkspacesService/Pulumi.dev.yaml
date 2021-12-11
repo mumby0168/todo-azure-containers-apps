@@ -1,0 +1,4 @@
+config:
+  ToBeDone.Infra.WorkspacesService:coreStackRef: mumby0168/ToBeDone/dev
+  ToBeDone.Infra.WorkspacesService:image: ghcr.io/mumby0168/to-be-done/workspaces-service:latest
+  azure-native:location: NorthEurope

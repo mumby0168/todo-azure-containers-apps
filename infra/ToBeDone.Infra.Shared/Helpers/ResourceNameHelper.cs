@@ -1,6 +1,6 @@
 using Pulumi;
 
-namespace ToBeDone.Helpers;
+namespace ToBeDone.Infra.Shared.Helpers;
 
 public class ResourceNameHelper
 {

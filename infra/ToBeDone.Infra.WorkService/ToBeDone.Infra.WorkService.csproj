@@ -4,13 +4,15 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <RootNamespace>ToBeDone</RootNamespace>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Pulumi" Version="3.*" />
-    <PackageReference Include="Pulumi.AzureNative" Version="1.48.0" />
+    <PackageReference Include="Pulumi.AzureNative" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToBeDone.Infra.Shared\ToBeDone.Infra.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,10 @@ az extension add \
 
 az provider register --namespace Microsoft.Web # this only needs running once per subscription
 
+az provider register --namespace Microsoft.Insights # this only needs running once per subscription
+
+az provider show -n microsoft.insights
+
 # Setup
 
 RESOURCE_GROUP="rg-tobedone-dev"
