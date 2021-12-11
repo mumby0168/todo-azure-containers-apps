@@ -89,6 +89,11 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Setup Pulumi CLI
         uses: pulumi/setup-pulumi@v2.0.0
 
@@ -113,6 +118,11 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
+
+      
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Pulumi CLI
         uses: pulumi/setup-pulumi@v2.0.0
