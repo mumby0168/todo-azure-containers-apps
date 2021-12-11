@@ -55,7 +55,7 @@ class ToBeDoneCoreStack : Stack
                 LogAnalyticsConfiguration = new LogAnalyticsConfigurationArgs
                 {
                     CustomerId = workspace.CustomerId,
-                    SharedKey = workspaceSharedKeys.Apply(r => r.PrimarySharedKey)
+                    SharedKey = workspaceSharedKeys.Apply(r => r.PrimarySharedKey!)
                 }
             }
         });
