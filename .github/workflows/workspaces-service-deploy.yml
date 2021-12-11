@@ -88,13 +88,14 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-      
-      - uses: pulumi/actions@v3
-        with:
-          command: preview
-          args: --diff -c image=ghcr.io/mumby0168/to-be-done/workspaces-service:${{ needs.version.outputs.img_ver }}
-          stack-name: dev
-          work-dir: ./infra/ToBeDone.Infra.WorkspacesService
+
+      - name: Setup Pulumi CLI
+        uses: pulumi/setup-pulumi@v2.0.0
+
+      - name: Preview
+        working-directory: ./infra/ToBeDone.Infra.WorkspacesService
+        run: |
+              pulumi preview --stack dev --diff -c image=ghcr.io/mumby0168/to-be-done/workspaces-service:${{ needs.version.outputs.img_ver }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
@@ -112,17 +113,14 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
+
+      - name: Setup Pulumi CLI
+        uses: pulumi/setup-pulumi@v2.0.0
       
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          args: -c image=ghcr.io/mumby0168/to-be-done/workspaces-service:${{ needs.version.outputs.img_ver }}
-          stack-name: dev
-          work-dir: ./infra/ToBeDone.Infra.WorkspacesService
+      - name: Pulumi Up
+        working-directory: ./infra/ToBeDone.Infra.WorkspacesService
+        run: |
+              pulumi up --stack dev -c image=ghcr.io/mumby0168/to-be-done/workspaces-service:${{ needs.version.outputs.img_ver }} --yes
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         
-
-      
-
-    
