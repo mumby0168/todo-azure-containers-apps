@@ -1,11 +1,7 @@
 config:
-  ToBeDone:deployWorkService: "true"
-  ToBeDone:deployWorkspacesService: "false"
-  ToBeDone:workServiceVersion: ghcr.io/mumby0168/to-be-done/work-service:latest
-  ToBeDone:workspacesServiceVersion: ghcr.io/mumby0168/to-be-done/workspaces-service:latest
   azure-native:clientId: 54d914dc-2dd6-4c83-9c08-46201b19c140
   azure-native:clientSecret:
-    secure: AAABAEeqiBnOiPI0kzjqFdlyPkBHT1BHovYRcMiSvAIDV8gQsDeJflMjCmw/xTyxLbDq84XUfgdpKEgu5voWG89v
+    secure: AAABAC/3jP2JEQhWqLqF0YkY9dmEHB7qpw7JtyF+fViwikOWswO/gX4vPz/cQKiKCvKkN4JpuQ6Sf5FQ/2AcJHca
   azure-native:location: North Europe
   azure-native:subscriptionId: acf19add-9e4f-44ed-b9a5-16c2b1e2ca9e
   azure-native:tenantId: 16e04e4f-42c3-445b-9884-605e3bacbeee
