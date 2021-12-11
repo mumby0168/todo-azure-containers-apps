@@ -24,10 +24,6 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
       - uses: pulumi/actions@v3
         with:
           command: preview
