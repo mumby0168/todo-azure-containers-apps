@@ -91,8 +91,7 @@ jobs:
       
       - uses: pulumi/actions@v3
         with:
-          command: preview
-          args: --diff -c image=ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
+          command: preview --diff -c image=ghcr.io/mumby0168/to-be-done/work-service:${{ needs.version.outputs.img_ver }}
           stack-name: dev
           work-dir: ./infra/ToBeDone.Infra.WorkService
         env:
