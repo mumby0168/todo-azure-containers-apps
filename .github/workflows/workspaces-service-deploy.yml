@@ -79,8 +79,7 @@ jobs:
   preview:
     needs:
         - version
-        - buildcl
-        - preview
+        - build
     runs-on: ubuntu-latest
     steps:
 
