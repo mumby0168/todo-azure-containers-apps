@@ -1,4 +1,9 @@
 config:
   ToBeDone.Infra.WorkService:coreStackRef: mumby0168/ToBeDone/dev
   ToBeDone.Infra.WorkService:image: ghcr.io/mumby0168/to-be-done/workspaces-service:latest
-  azure-native:location: NorthEurope
+  azure-native:clientId: 54d914dc-2dd6-4c83-9c08-46201b19c140
+  azure-native:clientSecret:
+    secure: AAABAEeqiBnOiPI0kzjqFdlyPkBHT1BHovYRcMiSvAIDV8gQsDeJflMjCmw/xTyxLbDq84XUfgdpKEgu5voWG89v
+  azure-native:location: North Europe
+  azure-native:subscriptionId: acf19add-9e4f-44ed-b9a5-16c2b1e2ca9e
+  azure-native:tenantId: 16e04e4f-42c3-445b-9884-605e3bacbeee
