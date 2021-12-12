@@ -167,6 +167,52 @@ class ToBeDoneCoreStack : Stack
                 current.Apply(c => c.ObjectId),
             },
         });
+        
+        string appName = ResourceNameHelper.AppendEnvWithDash("client-app");
+        
+        var app = new ContainerApp(appName, new ContainerAppArgs
+        {
+            Name = appName,
+            ResourceGroupName = rg.Name,
+            KubeEnvironmentId = acaEnv.Id,
+            Configuration = new ConfigurationArgs
+            {
+                Ingress = new IngressArgs
+                {
+                    External = true,
+                    TargetPort = 80
+                },
+            },
+            Template = new TemplateArgs
+            {
+                Containers =
+                {
+                    new ContainerArgs
+                    {
+                        Name = ResourceNameHelper.AppendEnvWithDash(appName),
+                        Image = config.Require("image"),
+                        Resources = new ContainerResourcesArgs()
+                        {
+                            Cpu = 0.5,
+                            Memory = "1.0Gi"
+                        },
+                        Env = new InputList<EnvironmentVarArgs>()
+                        {
+                            new EnvironmentVarArgs()
+                            {
+                                Name = "ApplicationInsights__InstrumentationKey",
+                                Value = instrumentationKey
+                            }
+                        }
+                    },
+                },
+                Scale = new ScaleArgs()
+                {
+                    MinReplicas = 0,
+                    MaxReplicas = 1,
+                },
+            }
+        });
     }
 
     [Output("kubeEnvId")] public Output<string> KubeEnvId { get; set; }

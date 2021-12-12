@@ -1,4 +1,5 @@
 config:
+  ToBeDone.Infra.WorkService:image: ghcr.io/mumby0168/to-be-done/client:latest
   azure-native:clientId: 54d914dc-2dd6-4c83-9c08-46201b19c140
   azure-native:clientSecret:
     secure: AAABAC/3jP2JEQhWqLqF0YkY9dmEHB7qpw7JtyF+fViwikOWswO/gX4vPz/cQKiKCvKkN4JpuQ6Sf5FQ/2AcJHca
