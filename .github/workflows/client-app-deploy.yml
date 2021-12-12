@@ -74,7 +74,7 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.App/ToBeDone.App.Server/Dockerfile -t $IMAGE_ID:${{ needs.version.outputs.img_ver }} --output type=image,push=true
+          docker buildx build . --platform linux/amd64,linux/arm64 -f src/ToBeDone.App/Server/Dockerfile -t $IMAGE_ID:${{ needs.version.outputs.img_ver }} --output type=image,push=true
 
   preview:
     needs:
